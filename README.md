@@ -195,40 +195,38 @@
 > [!NOTE]
 > 默认参数基于 **2核2G 云服务器** 测试通过。若在 **软路由、树莓派或低配 PC** 上运行，建议降低 `MAX_WORKERS`、`BANDWIDTH_WORKERS`。
 
-所有参数均位于 `config.json`，以下为逐项说明。
-
 ### 筛选模式与数量控制
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `USE_GLOBAL_MODE` | `boolean` | `true` | **筛选模式**。<br>`true` = 全局优选模式（从所有节点中选出最优的 `GLOBAL_TOP_N` 个）。<br>`false` = 分国家优选模式（每个国家选出最优的 `PER_COUNTRY_TOP_N` 个）。 |
-| `GLOBAL_TOP_N` | `int` | `16` | 全局模式下最终保留的节点数量（仅在 `USE_GLOBAL_MODE=true` 时生效）。 |
-| `PER_COUNTRY_TOP_N` | `int` | `1` | 分国家模式下每个国家保留的节点数量（仅在 `USE_GLOBAL_MODE=false` 时生效）。 |
-| `BANDWIDTH_CANDIDATES` | `int` | `80` | **候选池大小**：从 TCP 测试通过者中选取前 N 个节点进入后续的可用性检测和带宽测速。增大该值可让更多节点参与最终竞争，但会延长总运行时间。 |
+| `USE_GLOBAL_MODE` | `boolean` | `true` | `true`=全局优选；`false`=分国家优选 |
+| `GLOBAL_TOP_N` | `int` | `16` | 全局模式保留节点数 |
+| `PER_COUNTRY_TOP_N` | `int` | `1` | 分国家模式每国保留节点数 |
+| `BANDWIDTH_CANDIDATES` | `int` | `80` | 进入测速的候选节点数 |
 
 ### TCP 连接测试参数
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `TCP_PROBES` | `int` | `7` | 每个节点测试 TCP 连接的次数。增加次数可提高延迟数据的准确性，但会增加总测试时间。 |
-| `MIN_SUCCESS_RATE` | `float` | `1.0` | **最低成功率阈值**（0.0 ~ 1.0）。节点在 `TCP_PROBES` 次测试中的成功比例必须 ≥ 此值才能进入下一轮。`1.0` 表示要求全部连接成功。若网络波动大，可适当降低（如 `0.7`）。 |
-| `TIMEOUT` | `float` | `2.5` | 单次 TCP 连接超时时间（秒）。超时未连上的即判定失败。网络延迟较高时可酌情增加。 |
+| `TCP_PROBES` | `int` | `7` | 每个节点 TCP 测试次数 |
+| `MIN_SUCCESS_RATE` | `float` | `1.0` | 最低成功率阈值（0.0~1.0） |
+| `TIMEOUT` | `float` | `2.5` | 单次 TCP 连接超时（秒） |
 
 ### 国家过滤参数（前置优化）
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `FILTER_COUNTRIES_ENABLED` | `boolean` | `false` | 是否启用国家过滤。若为 `true`，则只保留 `ALLOWED_COUNTRIES` 中列出的国家/地区的节点。**过滤在 TCP 测试前执行，可大幅减少测试量。** |
-| `ALLOWED_COUNTRIES` | `array` | `[]` | 允许的国家代码列表（如 `["HK","US","JP"]`），仅在 `FILTER_COUNTRIES_ENABLED=true` 时生效。国家代码应为两位大写字母。 |
+| `FILTER_COUNTRIES_ENABLED` | `boolean` | `false` | 是否启用国家过滤 |
+| `ALLOWED_COUNTRIES` | `array` | `["US","HK"]` | 允许的国家代码列表 |
 
 ### 微信通知（WxPusher）参数
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `ENABLE_WXPUSHER` | `boolean` | `true` | 是否启用 WxPusher 微信通知。 |
-| `WXPUSHER_APP_TOKEN` | `string` | `""` | **【必填】** WxPusher 的 APP_TOKEN。请从 [WxPusher 管理后台](https://wxpusher.zjiecode.com/admin/) 获取。 |
-| `WXPUSHER_UIDS` | `array` | `[""]` | **【必填】** 接收通知的用户 UID 列表。请从 WxPusher 获取您的 UID 并填入。 |
-| `WXPUSHER_API_URL` | `string` | `"http://wxpusher.zjiecode.com/api/send/message"` | 消息发送 API 地址，一般无需修改。 |
+| `ENABLE_WXPUSHER` | `boolean` | `true` | 是否启用微信通知 |
+| `WXPUSHER_APP_TOKEN` | `string` | `""` | **【必填】** WxPusher 的 APP_TOKEN |
+| `WXPUSHER_UIDS` | `array` | `[""]` | **【必填】** 接收通知的用户 UID 列表 |
+| `WXPUSHER_API_URL` | `string` | `http://wxpusher.zjiecode.com/api/send/message` | 消息发送 API 地址 |
 
 > 💡 若不需要通知，将 `ENABLE_WXPUSHER` 设为 `false` 即可。
 
@@ -236,19 +234,19 @@
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `CF_ENABLED` | `boolean` | `false` | 是否启用 Cloudflare DNS 自动批量更新。 |
-| `CF_API_TOKEN` | `string` | `""` | Cloudflare API 令牌（需具有 Zone:DNS:Edit 权限）。 |
-| `CF_ZONE_ID` | `string` | `""` | 域名区域 ID，在 Cloudflare 域名概览页右侧可找到。 |
-| `CF_DNS_RECORD_NAME` | `string` | `""` | 要更新的完整子域名，例如 `cf-proxy.yourdomain.com`。 |
-| `CF_TTL` | `int` | `60` | DNS 记录的 TTL（秒）。<br>可设置为 `1` 表示“自动”（实际为 300 秒）；其他常见值为 `60`、`120`、`300` 等。<br>**注意**：仅当 `CF_PROXIED = false`（仅 DNS 模式）时自定义 TTL 才生效；若开启代理，TTL 将被强制设为自动。 |
-| `CF_PROXIED` | `boolean` | `false` | 是否启用 Cloudflare CDN 代理（橙色云朵）。通常设为 `false`（仅 DNS 解析）。 |
+| `CF_ENABLED` | `boolean` | `true` | 是否启用 DNS 自动更新 |
+| `CF_API_TOKEN` | `string` | `"your_CF_API_TOKEN"` | Cloudflare API 令牌（Zone:DNS:Edit 权限） |
+| `CF_ZONE_ID` | `string` | `"your_CF_ZONE_ID"` | 域名区域 ID |
+| `CF_DNS_RECORD_NAME` | `string` | `"your_CF_DNS_RECORD_NAME"` | 完整子域名 |
+| `CF_TTL` | `int` | `60` | DNS 记录 TTL（秒） |
+| `CF_PROXIED` | `boolean` | `false` | 是否启用 Cloudflare CDN 代理 |
 
 ### 节点数据源与输出
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `JSON_URL` | `string` | `"https://zip.cm.edu.kg/all.txt"` | Cloudflare IP 节点数据源 URL（TXT 格式，每行 `IP:端口#国家`）。可替换为其他兼容源。 |
-| `OUTPUT_FILE` | `string` | `"ip.txt"` | 最终优选节点保存的文件名。程序运行后会覆盖写入该文件。 |
+| `JSON_URL` | `string` | `"https://zip.cm.edu.kg/all.txt"` | Cloudflare IP 节点数据源 |
+| `OUTPUT_FILE` | `string` | `"ip.txt"` | 最终结果保存文件名 |
 
 <details>
 <summary>🔧 高级参数（可用性 / 带宽 / 纯净度 / 并发 / 重试）</summary>
@@ -257,51 +255,51 @@
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `TEST_AVAILABILITY` | `boolean` | `true` | 是否对候选节点进行 **可用性二次筛选**（调用专用 API 检测节点能否正常代理请求）。推荐保持开启。 |
-| `FILTER_IPV6_AVAILABILITY` | `boolean` | `true` | **（新版语义）** 是否在 **Cloudflare DNS 更新时** 过滤掉落地 IP 为 IPv6 的节点。设为 `true` 后，DNS 记录只会包含落地 IPv4 的节点，**但不会影响 `ip.txt` 的输出和带宽测速候选池**。 |
-| `AVAILABILITY_CHECK_API` | `string` | `"https://check-proxyip-api.cmliussss.net/check"` | 可用性检测 API 地址。一般无需修改，除非服务地址变更。 |
-| `AVAILABILITY_TIMEOUT` | `float` | `8.0` | 单次 API 请求的超时时间（秒）。 |
-| `AVAILABILITY_RETRY_MAX` | `int` | `2` | 可用性检测整体失败（通过率为0）时的最大重试轮数。 |
-| `AVAILABILITY_RETRY_DELAY` | `int` | `5` | 可用性检测重试间隔（秒）。 |
+| `TEST_AVAILABILITY` | `boolean` | `true` | 是否进行可用性二次筛选 |
+| `FILTER_IPV6_AVAILABILITY` | `boolean` | `true` | DNS 更新时是否过滤落地 IPv6 |
+| `AVAILABILITY_CHECK_API` | `string` | `"https://check-proxyip-api.cmliussss.net/check"` | 可用性检测 API 地址 |
+| `AVAILABILITY_TIMEOUT` | `float` | `8` | 单次 API 请求超时（秒） |
+| `AVAILABILITY_RETRY_MAX` | `int` | `2` | 可用性检测最大重试轮数 |
+| `AVAILABILITY_RETRY_DELAY` | `int` | `5` | 可用性检测重试间隔（秒） |
 
 ### 带宽测速参数
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `BANDWIDTH_SIZE_MB` | `int` | `1` | 测速下载文件大小（MB）。值越大测速越精准，但耗时越长。建议保持 1-5 MB。 |
-| `BANDWIDTH_TIMEOUT` | `float` | `5.0` | 单个节点的带宽测速超时时间（秒）。如果文件在规定时间内无法下载完成，则判定测速失败。 |
-| `BANDWIDTH_RETRY_MAX` | `int` | `2` | **带宽测速整体重试次数**。当一轮测速后**所有候选节点均失败**（无任何有效速度）时，程序将等待 `BANDWIDTH_RETRY_DELAY` 秒后重新执行测速，最多重复 `BANDWIDTH_RETRY_MAX` 轮。若全部轮次仍无结果，则发送微信通知并降级使用 TCP 排序节点。 |
-| `BANDWIDTH_RETRY_DELAY` | `int` | `5` | 带宽测速整体重试前的等待时间（秒）。 |
-| `BANDWIDTH_URL_TEMPLATE` | `string` | `"https://speed.cloudflare.com/__down?bytes={bytes}"` | 带宽测速 URL 模板，`{bytes}` 会被替换为 `BANDWIDTH_SIZE_MB * 1024 * 1024`。一般无需修改。 |
+| `BANDWIDTH_SIZE_MB` | `int` | `1` | 测速下载文件大小（MB） |
+| `BANDWIDTH_TIMEOUT` | `float` | `5` | 单个节点带宽测速超时（秒） |
+| `BANDWIDTH_RETRY_MAX` | `int` | `2` | 带宽测速整体重试轮数 |
+| `BANDWIDTH_RETRY_DELAY` | `int` | `5` | 带宽测速重试间隔（秒） |
+| `BANDWIDTH_URL_TEMPLATE` | `string` | `"https://speed.cloudflare.com/__down?bytes={bytes}"` | 测速 URL 模板 |
 
 ### 纯净度检测参数
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `ENABLE_IP_PURITY_CHECK` | `boolean` | `true` | 是否在带宽测速后对节点进行 **IP 纯净度检测**。要求 `company.abuser_score` 和 `asn.abuser_score` 均为 `Low`。 |
-| `IP_PURITY_API` | `string` | `"https://api.ipapi.is/"` | 纯净度检测 API 地址。 |
-| `IP_PURITY_WORKERS` | `int` | `10` | 纯净度检测的并发线程数。 |
-| `IP_PURITY_TIMEOUT` | `int` | `8` | 纯净度 API 请求超时（秒）。 |
-| `IP_PURITY_RETRY_MAX` | `int` | `2` | 纯净度检测整体失败时的最大重试轮数。 |
-| `IP_PURITY_RETRY_DELAY` | `int` | `5` | 纯净度检测重试间隔（秒）。 |
-| `IP_PURITY_FALLBACK` | `boolean` | `true` | 多次重试仍全部失败时是否降级使用原带宽测速结果。 |
+| `ENABLE_IP_PURITY_CHECK` | `boolean` | `true` | 是否进行 IP 纯净度检测 |
+| `IP_PURITY_API` | `string` | `"https://api.ipapi.is/"` | 纯净度检测 API 地址 |
+| `IP_PURITY_WORKERS` | `int` | `10` | 纯净度检测并发数 |
+| `IP_PURITY_TIMEOUT` | `int` | `8` | 纯净度 API 请求超时（秒） |
+| `IP_PURITY_RETRY_MAX` | `int` | `2` | 纯净度检测最大重试轮数 |
+| `IP_PURITY_RETRY_DELAY` | `int` | `5` | 纯净度检测重试间隔（秒） |
+| `IP_PURITY_FALLBACK` | `boolean` | `true` | 全部失败时是否降级 |
 
 ### 并发控制参数
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `MAX_WORKERS` | `int` | `150` | TCP 并发测试的最大线程数。值越高测试越快，但会占用更多系统资源。若运行时出现大量超时错误，可适当降低。 |
-| `AVAILABILITY_WORKERS` | `int` | `20` | 可用性检测的并发线程数。 |
-| `BANDWIDTH_WORKERS` | `int` | `6` | 带宽测速的并发线程数。**注意**：测速非常消耗带宽，并发过高可能导致测速结果不准确或网络拥堵，建议不超过 10。 |
+| `MAX_WORKERS` | `int` | `150` | TCP 并发测试最大线程数 |
+| `AVAILABILITY_WORKERS` | `int` | `20` | 可用性检测并发数 |
+| `BANDWIDTH_WORKERS` | `int` | `6` | 带宽测速并发数（建议不超过 10） |
 
 ### 重试策略配置
 
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `DNS_UPDATE_MAX_RETRIES` | `int` | `5` | DNS 更新失败时的最大重试次数。 |
-| `DNS_UPDATE_RETRY_DELAY` | `int` | `10` | DNS 更新重试间隔（秒）。 |
-| `GITHUB_SYNC_MAX_RETRIES` | `int` | `5` | GitHub 推送失败时的最大重试次数。 |
-| `GITHUB_SYNC_RETRY_DELAY` | `int` | `10` | GitHub 推送重试间隔（秒）。 |
+| `DNS_UPDATE_MAX_RETRIES` | `int` | `5` | DNS 更新最大重试次数 |
+| `DNS_UPDATE_RETRY_DELAY` | `int` | `10` | DNS 更新重试间隔（秒） |
+| `GITHUB_SYNC_MAX_RETRIES` | `int` | `5` | GitHub 推送最大重试次数 |
+| `GITHUB_SYNC_RETRY_DELAY` | `int` | `10` | GitHub 推送重试间隔（秒） |
 
 </details>
 
