@@ -421,6 +421,11 @@ python3 main.py
 ```bash
 git init
 git remote add origin https://github.com/你的用户名/仓库名.git
+
+# 查看当前默认分支名（通常为 master 或 main）
+git branch
+
+# 如果默认分支不是 main，可强制重命名为 main（可选，与推送脚本中的 $branch 变量保持一致即可）
 git branch -M main
 ```
 
