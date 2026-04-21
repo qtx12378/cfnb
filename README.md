@@ -5,6 +5,8 @@
 [![GitHub stars](https://img.shields.io/github/stars/xinyitang3/cfnb?style=social)](https://github.com/xinyitang3/cfnb/stargazers)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-blue)]()
 [![License](https://img.shields.io/badge/License-MIT-green)]()
+[![Last Commit](https://img.shields.io/github/last-commit/xinyitang3/cfnb?label=Last%20Commit)](https://github.com/xinyitang3/cfnb/commits)
+[![Repo Size](https://img.shields.io/github/repo-size/xinyitang3/cfnb?label=Repo%20Size)](https://github.com/xinyitang3/cfnb)
 
 > ⭐ **如果觉得好用，点个 Star 支持一下～**
 
