@@ -235,6 +235,8 @@ python3 main.py
 | `TCP_PROBES` | `int` | `5` | 每个节点 TCP 测试次数 |
 | `MIN_SUCCESS_RATE` | `float` | `1.0` | 最低成功率阈值（0.0~1.0） |
 | `TIMEOUT` | `float` | `2.5` | 单次 TCP 连接超时（秒） |
+| `SOCKET_DEFAULT_TIMEOUT` | `int` | `5` | 全局 Socket 默认超时（秒），防止永久阻塞 |
+| `PROGRESS_PRINT_INTERVAL` | `float` | `1` | 进度打印刷新间隔（秒），避免频繁 I/O |
 
 ### 国家过滤参数（前置优化）
 
@@ -251,7 +253,8 @@ python3 main.py
 | `WXPUSHER_APP_TOKEN` | `string` | `""` | **【必填】** WxPusher 的 APP_TOKEN |
 | `WXPUSHER_UIDS` | `array` | `[""]` | **【必填】** 接收通知的用户 UID 列表 |
 | `WXPUSHER_API_URL` | `string` | `http://wxpusher.zjiecode.com/api/send/message` | 消息发送 API 地址 |
-| `NOTIFY_TIMEOUT` | `int` | `5` | 微信通知 API 请求超时（秒） |
+| `NOTIFY_TIMEOUT` | `int` | `5` | 微信通知 API 读取超时（秒） |
+| `NOTIFY_CONNECT_TIMEOUT` | `int` | `5` | 微信通知 API 连接超时（秒） |
 
 > 💡 若不需要通知，将 `ENABLE_WXPUSHER` 设为 `false` 即可。
 
@@ -265,6 +268,8 @@ python3 main.py
 | `CF_DNS_RECORD_NAME` | `string` | `""` | 完整子域名 |
 | `CF_TTL` | `int` | `60` | DNS 记录 TTL（秒） |
 | `CF_PROXIED` | `boolean` | `false` | 是否启用 Cloudflare CDN 代理 |
+| `CF_DNS_CONNECT_TIMEOUT` | `int` | `5` | Cloudflare API 连接超时（秒） |
+| `CF_DNS_READ_TIMEOUT` | `int` | `10` | Cloudflare API 读取超时（秒） |
 
 > 💡 若不需要 DNS 更新，将 `CF_ENABLED` 设为 `false` 即可。
 
@@ -275,7 +280,8 @@ python3 main.py
 | `JSON_URL` | `string` | `"https://zip.cm.edu.kg/all.txt"` | Cloudflare IP 节点数据源 |
 | `FETCH_MAX_RETRIES` | `int` | `3` | 获取节点列表失败时的最大重试次数 |
 | `FETCH_RETRY_DELAY` | `int` | `5` | 获取节点列表重试间隔（秒） |
-| `FETCH_TIMEOUT` | `int` | `5` | 获取节点列表单次请求超时（秒） |
+| `FETCH_TIMEOUT` | `int` | `5` | 获取节点列表读取超时（秒） |
+| `FETCH_CONNECT_TIMEOUT` | `int` | `5` | 获取节点列表连接超时（秒） |
 | `OUTPUT_FILE` | `string` | `"ip.txt"` | 最终结果保存文件名 |
 
 <details>
@@ -288,7 +294,8 @@ python3 main.py
 | `TEST_AVAILABILITY` | `boolean` | `true` | 是否进行可用性二次筛选 |
 | `FILTER_IPV6_AVAILABILITY` | `boolean` | `true` | DNS 更新时是否过滤落地 IPv6 |
 | `AVAILABILITY_CHECK_API` | `string` | `"https://check-proxyip-api.cmliussss.net/check"` | 可用性检测 API 地址 |
-| `AVAILABILITY_TIMEOUT` | `float` | `5` | 单次 API 请求超时（秒） |
+| `AVAILABILITY_TIMEOUT` | `int` | `5` | 可用性 API 读取超时（秒） |
+| `AVAILABILITY_CONNECT_TIMEOUT` | `int` | `5` | 可用性 API 连接超时（秒） |
 | `AVAILABILITY_RETRY_MAX` | `int` | `2` | 可用性检测最大重试轮数 |
 | `AVAILABILITY_RETRY_DELAY` | `int` | `5` | 可用性检测重试间隔（秒） |
 
@@ -297,11 +304,12 @@ python3 main.py
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
 | `BANDWIDTH_SIZE_MB` | `int` | `1` | 测速下载文件大小（MB） |
-| `BANDWIDTH_TIMEOUT` | `float` | `5` | 单个节点带宽测速超时（秒） |
+| `BANDWIDTH_TIMEOUT` | `int` | `5` | 单个节点带宽测速超时（秒） |
 | `BANDWIDTH_RETRY_MAX` | `int` | `2` | 带宽测速整体重试轮数 |
 | `BANDWIDTH_RETRY_DELAY` | `int` | `5` | 带宽测速重试间隔（秒） |
 | `BANDWIDTH_URL_TEMPLATE` | `string` | `"https://speed.cloudflare.com/__down?bytes={bytes}"` | 测速 URL 模板 |
 | `BANDWIDTH_PROCESS_BUFFER` | `int` | `2` | curl 进程额外缓冲时间（秒） |
+| `BANDWIDTH_CONNECT_TIMEOUT` | `int` | `5` | curl 测速连接超时（秒） |
 
 **纯净度检测参数**
 
@@ -310,7 +318,8 @@ python3 main.py
 | `ENABLE_IP_PURITY_CHECK` | `boolean` | `true` | 是否进行 IP 纯净度检测 |
 | `IP_PURITY_API` | `string` | `"https://api.ipapi.is/"` | 纯净度检测 API 地址 |
 | `IP_PURITY_WORKERS` | `int` | `5` | 纯净度检测并发数 |
-| `IP_PURITY_TIMEOUT` | `int` | `5` | 纯净度 API 请求超时（秒） |
+| `IP_PURITY_TIMEOUT` | `int` | `5` | 纯净度 API 读取超时（秒） |
+| `IP_PURITY_CONNECT_TIMEOUT` | `int` | `5` | 纯净度 API 连接超时（秒） |
 | `IP_PURITY_RETRY_MAX` | `int` | `2` | 纯净度检测最大重试轮数 |
 | `IP_PURITY_RETRY_DELAY` | `int` | `5` | 纯净度检测重试间隔（秒） |
 | `IP_PURITY_FALLBACK` | `boolean` | `true` | 全部失败时是否降级 |
@@ -331,6 +340,7 @@ python3 main.py
 | `DNS_UPDATE_RETRY_DELAY` | `int` | `5` | DNS 更新重试间隔（秒） |
 | `GITHUB_SYNC_MAX_RETRIES` | `int` | `3` | GitHub 推送最大重试次数 |
 | `GITHUB_SYNC_RETRY_DELAY` | `int` | `5` | GitHub 推送重试间隔（秒） |
+| `GIT_SYNC_PROCESS_TIMEOUT` | `int` | `180` | Git 同步子进程最大运行时间（秒） |
 
 </details>
 
