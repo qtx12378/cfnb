@@ -146,7 +146,7 @@ def load_config():
         "FETCH_CONNECT_TIMEOUT": 3,
         "OUTPUT_FILE": "ip.txt",
         "TEST_AVAILABILITY": True,
-        "AVAILABILITY_CHECK_API": "https://api.check.proxyip.cmliussss.net/check",
+        "AVAILABILITY_CHECK_API": "https://api.090227.xyz/check",
         "AVAILABILITY_TIMEOUT": 3,
         "AVAILABILITY_CONNECT_TIMEOUT": 3,
         "AVAILABILITY_RETRY_MAX": 2,
@@ -332,7 +332,7 @@ def _parse_json_nodes(data):
 
 def _query_country(ip, port):
     """通过已有的可用性检测 API 查询 IP 的国家代码"""
-    api_url = cfg.get("AVAILABILITY_CHECK_API", "https://api.check.proxyip.cmliussss.net/check")
+    api_url = cfg.get("AVAILABILITY_CHECK_API", "https://api.090227.xyz/check")
     try:
         resp = requests.get(
             api_url,

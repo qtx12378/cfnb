@@ -338,7 +338,7 @@ python3 main.py
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
 | `TEST_AVAILABILITY` | `boolean` | `true` | 是否进行可用性二次筛选 |
-| `AVAILABILITY_CHECK_API` | `string` | `"https://api.check.proxyip.cmliussss.net/check"` | 可用性检测 API 地址 |
+| `AVAILABILITY_CHECK_API` | `string` | `"https://api.090227.xyz/check"` | 可用性检测 API 地址 |
 | `AVAILABILITY_TIMEOUT` | `int` | `3` | 可用性 API 读取超时（秒） |
 | `AVAILABILITY_CONNECT_TIMEOUT` | `int` | `3` | 可用性 API 连接超时（秒） |
 | `AVAILABILITY_RETRY_MAX` | `int` | `2` | 可用性检测最大重试轮数 |
@@ -639,7 +639,7 @@ git branch -M $(git remote show origin | grep "HEAD branch" | cut -d " " -f5) 2>
 > 各阶段对应域名见上方“涉及域名”列表。
 
 **涉及域名：**  
-`cm.edu.kg` · `cmliussss.net` · `090227.xyz` · `cloudflare.com` · `zjiecode.com` · `pages.dev` · `github.com` · `githubusercontent.com`
+`cm.edu.kg` · `090227.xyz` · `cloudflare.com` · `zjiecode.com` · `pages.dev` · `github.com` · `githubusercontent.com`
 
 **建议：**  
 1. 检查本机能否直连上述域名 → 能通设 `DIRECT`，不通设 `PROXY`  

@@ -98,7 +98,7 @@
     "TEST_AVAILABILITY": true,
     "_comment_TEST_AVAILABILITY": "是否对候选节点进行可用性二次筛选（API检测）",
 
-    "AVAILABILITY_CHECK_API": "https://api.check.proxyip.cmliussss.net/check",
+    "AVAILABILITY_CHECK_API": "https://api.090227.xyz/check",
     "_comment_AVAILABILITY_CHECK_API": "IP 可用性检测 API 地址",
 
     "AVAILABILITY_TIMEOUT": 3,
