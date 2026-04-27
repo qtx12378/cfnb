@@ -70,7 +70,7 @@
             "enabled": true
         },
         {
-            "url": "https://ip-31c.pages.dev/sub",
+            "url": "https://ip-31c.pages.dev/proxy",
             "enabled": true
         },
         {
@@ -98,7 +98,7 @@
     "TEST_AVAILABILITY": true,
     "_comment_TEST_AVAILABILITY": "是否对候选节点进行可用性二次筛选（API检测）",
 
-    "AVAILABILITY_CHECK_API": "https://api.check.proxyip.cmliussss.net/check",
+    "AVAILABILITY_CHECK_API": "https://api.090227.xyz/check",
     "_comment_AVAILABILITY_CHECK_API": "IP 可用性检测 API 地址",
 
     "AVAILABILITY_TIMEOUT": 3,
@@ -155,6 +155,9 @@
 
     "AVAILABILITY_WORKERS": 10,
     "_comment_AVAILABILITY_WORKERS": "可用性检测的并发线程数",
+
+    "FALLBACK_WORKERS": 10,
+    "_comment_FALLBACK_WORKERS": "备用国家查询的并发线程数（当标签无法识别时自动调用可用性 API 查询）",
 
     "BANDWIDTH_WORKERS": 10,
     "_comment_BANDWIDTH_WORKERS": "带宽测速的并发线程数",

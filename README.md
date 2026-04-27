@@ -11,7 +11,7 @@
 
 > ⭐ **如果觉得好用，点个 Star 支持一下～**
 
-这是一个全自动的 **Cloudflare CDN 节点优选工具**。它通过 **TCP 延迟筛选** + **IP 可用性二次检测** + **真实带宽测速** 三重机制，从海量公开节点中筛选出当前网络环境下速度最快、可用性最高的 Cloudflare IP，并支持**自动更新至 Cloudflare DNS** 以及**同步至 GitHub 仓库**，同时支持微信实时通知。
+这是一个全自动的 **Cloudflare CDN 节点优选工具**。它通过 **TCP 延迟筛选** + **IP 可用性二次检测** + **真实带宽测速** 三重机制，从多个公开数据源中聚合节点，自动识别并解析任意格式（标准代码、中文名、emoji国旗、JSON等），筛选出当前网络环境下速度最快、可用性最高的 Cloudflare IP，并支持**自动更新至 Cloudflare DNS** 以及**同步至 GitHub 仓库**，同时支持微信实时通知。
 
 > [!IMPORTANT]
 > **跨平台支持**：本工具同时兼容 **Windows** 和 **Linux** 操作系统。
@@ -26,6 +26,7 @@
 - ⚙️ [我要调整参数](#%EF%B8%8F-配置说明完整参数详解)
 - ☁️ [我要配置 Cloudflare DNS](#%EF%B8%8F-配置-cloudflare-dns-自动更新)
 - 📤 [我要配置 GitHub 同步](#-配置-github-自动同步)
+- 🔧 [Fork 后无法推送？一键修复](#-fork-后无法推送一键修复)
 - 🔗 [对接 EdgeTunnel 指南](#-%E5%AF%B9%E6%8E%A5-edgetunnel-20-%E6%8C%87%E5%8D%97)
 - ❓ [常见问题](#-常见问题)
 
@@ -39,6 +40,7 @@
 | ⚡ **TCP 连接测试** | 并发测延迟，可设成功率阈值 |
 | 🔍 **可用性二次检测** | API 验证代理能力 |
 | 📶 **真实带宽测速** | curl 下载测速，实测吞吐量 |
+| 🧩 **多源自适应聚合** | 支持多个数据源，自动识别并解析任意格式（标准代码、中文名、emoji国旗、JSON等），统一转换为标准格式 |
 | 🚫 **屏蔽国家过滤** | DNS 更新时屏蔽指定国家（**仅作用于 DNS 更新环节**） |
 | 🌍 **国家过滤前置** | TCP 测试前即过滤指定国家（减少无效测试） |
 | ☁️ **Cloudflare DNS 更新** | 批量替换同名 A 记录 |
@@ -48,6 +50,7 @@
 | 📤 **GitHub 自动同步** | `ip.txt` 推送至仓库，方便订阅 |
 | 🔒 **隐私保护** | `.gitignore` 忽略敏感文件 |
 | 🖥️ **跨平台兼容** | 同时支持 Windows 和 Linux |
+| 🔧 **Fork 修复** | 内置 `update_fork.ps1` / `update_fork.sh`，解决 fork 后的历史冲突与认证问题 |
 
 ---
 
@@ -62,6 +65,8 @@
 | `setup.ps1` | Windows 一键部署脚本（安装依赖并配置计划任务） |
 | `setup.sh` | Linux 一键部署脚本（安装依赖并配置 cron） |
 | `ip.txt` | 最终优选节点列表（每次运行覆盖） |
+| `update_fork.ps1` | Windows 仓库修复脚本（解决 fork 后冲突/认证） |
+| `update_fork.sh` | Linux 仓库修复脚本（解决 fork 后冲突/认证） |
 
 ---
 
@@ -201,6 +206,30 @@ python3 main.py
 
 ---
 
+## 🔧 Fork 后无法推送？一键修复
+
+**适用于 fork 或修改远程仓库后，出现以下任一问题的情况：**
+
+- `git pull` 报错：`fatal: refusing to merge unrelated histories`
+- 推送时每次弹出浏览器要求登录
+
+**运行对应平台的一键修复脚本即可**（前提：已按前文填写好 `config.json` 与推送脚本中的令牌）
+
+| 平台 | 命令 |
+| :--- | :--- |
+| Windows PowerShell | `.\update_fork.ps1` |
+| Linux | `chmod +x update_fork.sh && ./update_fork.sh` |
+
+脚本会自动完成：
+- 备份现有配置文件（可随时恢复）
+- 设置免认证远程地址
+- 强制对齐本地与远程仓库
+- 将你的令牌安全注入最新版本的文件（不覆盖其他参数）
+
+> 💡 运行成功后，`main.py` 即可正常自动推送，不再有任何冲突或弹窗。
+
+---
+
 ## 🕒 定时自动运行说明
 
 | 平台 | 方式 | 行为 |
@@ -289,9 +318,12 @@ python3 main.py
 
 ### 节点数据源与获取配置
 
+> [!NOTE]
+> 本工具支持**多个数据源同时使用**，并内置了**完全自适应的解析引擎**。无论数据源是标准 `IP:端口#代码` 格式，还是中文标签、emoji国旗、JSON数组/对象，甚至是混合无关文字的标签，程序都能自动识别并统一转换为标准格式。添加新数据源只需在 `ADDITIONAL_SOURCES` 数组中新增一个对象，无需任何代码修改。
+
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
-| `JSON_URL` | `string` | `"https://zip.cm.edu.kg/all.txt"` | Cloudflare IP 节点数据源 |
+| `ADDITIONAL_SOURCES` | `array` | `[]` | 所有数据源列表，每个对象包含 `url`（必填）和 `enabled`（可选，默认true）。程序会自动识别并解析任何常见格式（标准代码/中文/emoji/JSON等） |
 | `FETCH_MAX_RETRIES` | `int` | `3` | 获取节点列表失败时的最大重试次数 |
 | `FETCH_RETRY_DELAY` | `int` | `3` | 获取节点列表重试间隔（秒） |
 | `FETCH_TIMEOUT` | `int` | `3` | 获取节点列表读取超时（秒） |
@@ -306,7 +338,7 @@ python3 main.py
 | 参数 | 类型 | 默认值 | 说明 |
 | :--- | :--- | :--- | :--- |
 | `TEST_AVAILABILITY` | `boolean` | `true` | 是否进行可用性二次筛选 |
-| `AVAILABILITY_CHECK_API` | `string` | `"https://api.check.proxyip.cmliussss.net/check"` | 可用性检测 API 地址 |
+| `AVAILABILITY_CHECK_API` | `string` | `"https://api.090227.xyz/check"` | 可用性检测 API 地址 |
 | `AVAILABILITY_TIMEOUT` | `int` | `3` | 可用性 API 读取超时（秒） |
 | `AVAILABILITY_CONNECT_TIMEOUT` | `int` | `3` | 可用性 API 连接超时（秒） |
 | `AVAILABILITY_RETRY_MAX` | `int` | `2` | 可用性检测最大重试轮数 |
@@ -334,6 +366,7 @@ python3 main.py
 | `MAX_WORKERS` | `int` | `200` | TCP 并发测试最大线程数 |
 | `AVAILABILITY_WORKERS` | `int` | `10` | 可用性检测并发数 |
 | `BANDWIDTH_WORKERS` | `int` | `10` | 带宽测速并发数（建议不超过 10） |
+| `FALLBACK_WORKERS` | `int` | `10` | 备用国家查询的并发线程数（当标签无法识别时自动调用可用性API查询国家） |
 
 **重试策略配置**
 
@@ -606,7 +639,7 @@ git branch -M $(git remote show origin | grep "HEAD branch" | cut -d " " -f5) 2>
 > 各阶段对应域名见上方“涉及域名”列表。
 
 **涉及域名：**  
-`cm.edu.kg` · `cmliussss.net` · `090227.xyz` · `cloudflare.com` · `zjiecode.com` · `github.com` · `githubusercontent.com`
+`cm.edu.kg` · `090227.xyz` · `cloudflare.com` · `zjiecode.com` · `pages.dev` · `github.com` · `githubusercontent.com`
 
 **建议：**  
 1. 检查本机能否直连上述域名 → 能通设 `DIRECT`，不通设 `PROXY`  
@@ -640,16 +673,24 @@ git branch -M $(git remote show origin | grep "HEAD branch" | cut -d " " -f5) 2>
 5. **GitHub 推送时提示权限错误或 403**  
    - 请确认令牌具有 `repo` 权限，且未过期。创建令牌时务必勾选 **repo** 全部子项，并将过期时间设为 **No expiration**。
 
+6. **`git pull` 报错 `fatal: refusing to merge unrelated histories`**  
+   - 通常发生在 Fork 或手动修改远程仓库后。运行对应平台的一键修复脚本即可：
+     - Windows：`.\update_fork.ps1`
+     - Linux：`./update_fork.sh`
+
+7. **每次推送都弹出浏览器要求登录**  
+   - 运行上述 `update_fork.ps1` 或 `update_fork.sh`，自动将远程地址设为免认证模式。
+
 </details>
 
 <details>
 <summary>☁️ Cloudflare DNS 更新</summary>
 
-6. **Cloudflare DNS 更新失败**  
+8. **Cloudflare DNS 更新失败**  
    - 检查 `CF_API_TOKEN` 权限、`CF_ZONE_ID`、`CF_DNS_RECORD_NAME` 是否正确。  
    - 程序内置重试机制，全部失败时会通过微信通知（如已启用）。
 
-7. **为什么我的 DNS 记录数量少于 `GLOBAL_TOP_N`？**  
+9. **为什么我的 DNS 记录数量少于 `GLOBAL_TOP_N`？**  
    如果你启用了 `FILTER_IPV6_AVAILABILITY`，且候选池中落地 IPv4 的节点总数不足目标数量，则 DNS 只会更新实际可用的节点数。这是正常现象，你可以通过增加 `BANDWIDTH_CANDIDATES` 来扩大候选池。
 
 </details>
@@ -657,7 +698,7 @@ git branch -M $(git remote show origin | grep "HEAD branch" | cut -d " " -f5) 2>
 <details>
 <summary>🔍 检测与过滤</summary>
 
-8. **可用性检测全部失败**  
+10. **可用性检测全部失败**  
    若 API 接口异常，程序会自动跳过此步骤并回退到 TCP 筛选结果，同时发送微信提醒（如已配置）。
 
 </details>
@@ -665,7 +706,7 @@ git branch -M $(git remote show origin | grep "HEAD branch" | cut -d " " -f5) 2>
 <details>
 <summary>🔒 隐私与其他</summary>
 
-9. **隐私保护**  
+11. **隐私保护**  
    自动生成的 `.gitignore` 文件会忽略 `config.json`、`git_sync.ps1` 和 `git_sync.sh`，防止敏感信息被提交到公开仓库。
 
 </details>
